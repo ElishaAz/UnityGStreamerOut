@@ -14,7 +14,7 @@ namespace GStreamerOut
 
         [SerializeField] private int _height = 1080;
 
-        [SerializeField] private float _frameRate = 60;
+        [SerializeField] private float _frameRate = 30;
 
         [SerializeField] private string _pipeline = "videoconvert ! autovideosink";
 
