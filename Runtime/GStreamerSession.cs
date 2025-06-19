@@ -9,10 +9,11 @@ namespace GStreamerOut
         #region Factory methods
 
         public static GStreamerSession Create(string executable, int width, int height, float frameRate,
-            string pipeline)
+            string pipeline, bool preprocess)
         {
             return new GStreamerSession(executable,
-                $"fdsrc fd=0 do-timestamp=true is-live=true ! rawvideoparse format=rgba width={width} height={height} framerate={frameRate} ! {pipeline}");
+                $"fdsrc fd=0 do-timestamp=true is-live=true ! rawvideoparse format=rgba width={width} height={height} framerate={frameRate} ! {pipeline}",
+                preprocess);
         }
 
         #endregion
@@ -67,8 +68,9 @@ namespace GStreamerOut
 
         private GStreamerPipe _pipe;
         private Material _blitMaterial;
+        private bool _preprocess;
 
-        private GStreamerSession(string executable, string arguments)
+        private GStreamerSession(string executable, string arguments, bool preprocess)
         {
             if (!GStreamerPipe.IsAvailable(executable))
                 Debug.LogWarning(
@@ -83,6 +85,8 @@ namespace GStreamerOut
                 );
             else
                 _pipe = new GStreamerPipe(executable, arguments);
+
+            _preprocess = preprocess;
         }
 
         ~GStreamerSession()
@@ -110,19 +114,26 @@ namespace GStreamerOut
                 return;
             }
 
-            // Lazy initialization of the preprocessing blit shader
-            if (_blitMaterial == null)
+            if (_preprocess)
             {
-                var shader = Shader.Find("Hidden/GStreamerOut/Preprocess");
-                _blitMaterial = new Material(shader);
-            }
+                // Lazy initialization of the preprocessing blit shader
+                if (_blitMaterial == null)
+                {
+                    var shader = Shader.Find("Hidden/GStreamerOut/Preprocess");
+                    _blitMaterial = new Material(shader);
+                }
 
-            // Blit to a temporary texture and request readback on it.
-            var rt = RenderTexture.GetTemporary
-                (source.width, source.height, 0, RenderTextureFormat.ARGB32);
-            Graphics.Blit(source, rt, _blitMaterial, 0);
-            _readbackQueue.Add(AsyncGPUReadback.Request(rt));
-            RenderTexture.ReleaseTemporary(rt);
+                // // Blit to a temporary texture and request readback on it.
+                var rt = RenderTexture.GetTemporary
+                    (source.width, source.height, 0, RenderTextureFormat.ARGB32);
+                Graphics.Blit(source, rt, _blitMaterial, 0);
+                _readbackQueue.Add(AsyncGPUReadback.Request(rt));
+                RenderTexture.ReleaseTemporary(rt);
+            }
+            else
+            {
+                _readbackQueue.Add(AsyncGPUReadback.Request(source));
+            }
         }
 
         private void ProcessQueue()

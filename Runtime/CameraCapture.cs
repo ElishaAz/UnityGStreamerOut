@@ -19,6 +19,7 @@ namespace GStreamerOut
         [SerializeField] private string _pipeline = "videoconvert ! autovideosink";
 
         [SerializeField] private bool createBlitter = true;
+        [SerializeField] private bool preprocess = true;
 
         #endregion
 
@@ -32,6 +33,11 @@ namespace GStreamerOut
 
         private RenderTextureFormat GetTargetFormat()
         {
+            if (!preprocess)
+            {
+                return RenderTextureFormat.ARGB32;
+            }
+
             return camera.allowHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default;
         }
 
@@ -123,12 +129,12 @@ namespace GStreamerOut
                         _blitter = Blitter.CreateInstance(camera);
                 }
 
-                // Start an GStreamer session.
+                // Start a GStreamer session.
                 _session = GStreamerSession.Create(
                     _executable,
                     camera.targetTexture.width,
                     camera.targetTexture.height,
-                    _frameRate, _pipeline
+                    _frameRate, _pipeline, preprocess
                 );
 
                 _startTime = Time.time;
