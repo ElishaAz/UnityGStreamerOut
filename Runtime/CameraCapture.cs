@@ -22,16 +22,18 @@ namespace GStreamerOut
 
         #region Private members
 
-        GStreamerSession _session;
-        RenderTexture _tempRT;
-        GameObject _blitter;
+        private GStreamerSession _session;
+        private RenderTexture _tempRT;
+        private GameObject _blitter;
 
-        private RenderTextureFormat GetTargetFormat(Camera camera)
+        private Camera camera;
+
+        private RenderTextureFormat GetTargetFormat()
         {
             return camera.allowHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default;
         }
 
-        private int GetAntiAliasingLevel(Camera camera)
+        private int GetAntiAliasingLevel()
         {
             return Mathf.Max(camera.allowMSAA ? QualitySettings.antiAliasing : 1, 1);
         }
@@ -87,6 +89,11 @@ namespace GStreamerOut
             }
         }
 
+        private void Awake()
+        {
+            camera = GetComponent<Camera>();
+        }
+
         private IEnumerator Start()
         {
             // Sync with GStreamer pipe thread at the end of every frame.
@@ -99,8 +106,6 @@ namespace GStreamerOut
 
         private void Update()
         {
-            var camera = GetComponent<Camera>();
-
             // Lazy initialization
             if (_session == null)
             {
@@ -109,8 +114,8 @@ namespace GStreamerOut
                 // object to keep frames presented on the screen.
                 if (camera.targetTexture == null)
                 {
-                    _tempRT = new RenderTexture(_width, _height, 24, GetTargetFormat(camera));
-                    _tempRT.antiAliasing = GetAntiAliasingLevel(camera);
+                    _tempRT = new RenderTexture(_width, _height, 24, GetTargetFormat());
+                    _tempRT.antiAliasing = GetAntiAliasingLevel();
                     camera.targetTexture = _tempRT;
                     _blitter = Blitter.CreateInstance(camera);
                 }
