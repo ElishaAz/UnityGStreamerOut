@@ -1,5 +1,9 @@
 {
-    "name" : "com.elishaazaria.gstreamerout",
-    "displayName": "GStreamerOut",
-    "version" : "0.1.0"
+  "name": "com.elishaazaria.gstreamerout",
+  "displayName": "GStreamerOut",
+  "version": "0.1.0",
+  "description": "Stream camera output using GStreamer",
+  "unity": "2019.1",
+  "dependencies": {},
+  "keywords": []
 }
