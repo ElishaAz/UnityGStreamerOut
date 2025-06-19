@@ -18,6 +18,8 @@ namespace GStreamerOut
 
         [SerializeField] private string _pipeline = "videoconvert ! autovideosink";
 
+        [SerializeField] private bool createBlitter = true;
+
         #endregion
 
         #region Private members
@@ -117,7 +119,8 @@ namespace GStreamerOut
                     _tempRT = new RenderTexture(_width, _height, 24, GetTargetFormat());
                     _tempRT.antiAliasing = GetAntiAliasingLevel();
                     camera.targetTexture = _tempRT;
-                    _blitter = Blitter.CreateInstance(camera);
+                    if (createBlitter)
+                        _blitter = Blitter.CreateInstance(camera);
                 }
 
                 // Start an GStreamer session.
