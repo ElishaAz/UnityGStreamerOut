@@ -61,7 +61,7 @@ namespace GStreamerOut
             if (++_frameDropCount != 10) return;
 
             Debug.LogWarning(
-                "Significant frame droppping was detected. This may introduce " +
+                "Significant frame dropping was detected. This may introduce " +
                 "time instability into output video. Decreasing the recording " +
                 "frame rate is recommended."
             );
