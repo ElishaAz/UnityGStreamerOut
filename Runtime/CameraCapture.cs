@@ -6,7 +6,7 @@ namespace GStreamerOut
     [AddComponentMenu("GStreamerOut/Camera Capture")]
     public sealed class CameraCapture : MonoBehaviour
     {
-        #region Public properties
+        #region Private fields
 
         [SerializeField] private string _executable = "gst-launch-1.0";
 
@@ -21,6 +21,40 @@ namespace GStreamerOut
         [SerializeField] private bool createBlitter = true;
         [SerializeField] private bool preprocess = true;
 
+        #endregion
+        
+        #region Getters and setters
+
+        public string Executable
+        {
+            get => _executable;
+            set => _executable = value;
+        }
+
+        public int Width
+        {
+            get => _width;
+            set => _width = value;
+        }
+
+        public int Height
+        {
+            get => _height;
+            set => _height = value;
+        }
+
+        public float FrameRate
+        {
+            get => _frameRate;
+            set => _frameRate = value;
+        }
+
+        public string Pipeline
+        {
+            get => _pipeline;
+            set => _pipeline = value;
+        }
+        
         #endregion
 
         #region Private members
