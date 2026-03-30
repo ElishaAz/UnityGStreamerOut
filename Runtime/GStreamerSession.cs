@@ -12,7 +12,7 @@ namespace GStreamerOut
             string pipeline, bool preprocess)
         {
             return new GStreamerSession(executable,
-                $"fdsrc fd=0 do-timestamp=true is-live=true ! rawvideoparse format=rgba width={width} height={height} framerate={frameRate} ! {pipeline}",
+                $"fdsrc fd=0 do-timestamp=true ! rawvideoparse format=rgba width={width} height={height} framerate={frameRate} ! {pipeline}",
                 preprocess);
         }
 
